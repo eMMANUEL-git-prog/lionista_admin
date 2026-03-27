@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { api } from "@/lib/api";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 interface BlogPost {
   id: number;
@@ -14,7 +15,6 @@ interface BlogPost {
   is_published: boolean;
   created_at: string;
 }
-import Link from "next/link";
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -37,7 +37,7 @@ export default function BlogPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this post?")) return;
     try {
-      await api.deleteBlogPost(id);
+      await api.deleteBlogPost(id.toString()); // ✅ FIX HERE
       setPosts((prev) => prev.filter((p) => p.id !== id));
     } catch (error) {
       console.error("Failed to delete post:", error);
@@ -46,7 +46,10 @@ export default function BlogPage() {
 
   const handleTogglePublish = async (id: number, currentStatus: boolean) => {
     try {
-      await api.updateBlogPost(id, { is_published: !currentStatus });
+      await api.updateBlogPost(id.toString(), {
+        // ✅ FIX HERE
+        is_published: !currentStatus,
+      });
       setPosts((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, is_published: !currentStatus } : p,
@@ -85,22 +88,22 @@ export default function BlogPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border bg-muted/50">
-                  <th className="text-left text-sm font-medium text-muted-foreground px-6 py-4">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">
                     Title
                   </th>
-                  <th className="text-left text-sm font-medium text-muted-foreground px-6 py-4">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">
                     Category
                   </th>
-                  <th className="text-left text-sm font-medium text-muted-foreground px-6 py-4">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">
                     Author
                   </th>
-                  <th className="text-left text-sm font-medium text-muted-foreground px-6 py-4">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">
                     Date
                   </th>
-                  <th className="text-left text-sm font-medium text-muted-foreground px-6 py-4">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">
                     Status
                   </th>
-                  <th className="text-left text-sm font-medium text-muted-foreground px-6 py-4">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">
                     Actions
                   </th>
                 </tr>
@@ -143,15 +146,16 @@ export default function BlogPage() {
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/blog/${post.id}/edit`}
-                          className="p-1.5 rounded-lg bg-muted text-foreground hover:bg-muted/80 transition-colors"
+                          className="p-1.5 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
                         >
                           <Edit className="h-4 w-4" />
                         </Link>
+
                         <button
                           onClick={() =>
                             handleTogglePublish(post.id, post.is_published)
                           }
-                          className="p-1.5 rounded-lg bg-muted text-foreground hover:bg-muted/80 transition-colors"
+                          className="p-1.5 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
                         >
                           {post.is_published ? (
                             <EyeOff className="h-4 w-4" />
@@ -159,6 +163,7 @@ export default function BlogPage() {
                             <Eye className="h-4 w-4" />
                           )}
                         </button>
+
                         <button
                           onClick={() => handleDelete(post.id)}
                           className="p-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
@@ -169,6 +174,7 @@ export default function BlogPage() {
                     </td>
                   </tr>
                 ))}
+
                 {posts.length === 0 && (
                   <tr>
                     <td
