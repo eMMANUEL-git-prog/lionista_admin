@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { api } from "@/lib/api";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 interface Program {
   id: number;
@@ -12,7 +13,6 @@ interface Program {
   image_url: string;
   status: string;
 }
-import Link from "next/link";
 
 export default function ProgramsPage() {
   const [programs, setPrograms] = useState<Program[]>([]);
@@ -35,7 +35,7 @@ export default function ProgramsPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this program?")) return;
     try {
-      await api.deleteProgram(id);
+      await api.deleteProgram(id.toString()); // ✅ FIX
       setPrograms((prev) => prev.filter((p) => p.id !== id));
     } catch (error) {
       console.error("Failed to delete program:", error);
@@ -45,7 +45,7 @@ export default function ProgramsPage() {
   const handleToggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await api.updateProgram(id, { status: newStatus });
+      await api.updateProgram(id.toString(), { status: newStatus }); // ✅ FIX
       setPrograms((prev) =>
         prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)),
       );
@@ -119,6 +119,7 @@ export default function ProgramsPage() {
                       <Edit className="h-4 w-4" />
                       Edit
                     </Link>
+
                     <button
                       onClick={() =>
                         handleToggleStatus(program.id, program.status)
@@ -134,6 +135,7 @@ export default function ProgramsPage() {
                         <Eye className="h-4 w-4" />
                       )}
                     </button>
+
                     <button
                       onClick={() => handleDelete(program.id)}
                       className="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
@@ -145,6 +147,7 @@ export default function ProgramsPage() {
                 </div>
               </div>
             ))}
+
             {programs.length === 0 && (
               <div className="col-span-full text-center py-12 text-muted-foreground">
                 No programs found. Create your first program!

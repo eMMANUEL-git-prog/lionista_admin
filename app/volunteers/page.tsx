@@ -42,7 +42,7 @@ export default function VolunteersPage() {
     status: "approved" | "rejected",
   ) => {
     try {
-      await api.updateVolunteerStatus(id, status);
+      await api.updateVolunteerStatus(id.toString(), status);
       setVolunteers((prev) =>
         prev.map((v) => (v.id === id ? { ...v, status } : v)),
       );

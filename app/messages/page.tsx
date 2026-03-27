@@ -39,7 +39,7 @@ export default function MessagesPage() {
 
   const handleMarkAsRead = async (id: number) => {
     try {
-      await api.updateInquiryStatus(id, "read");
+      await api.updateInquiryStatus(id.toString(), "read"); // ✅ FIX
       setMessages((prev) =>
         prev.map((m) => (m.id === id ? { ...m, status: "read" } : m)),
       );
@@ -51,7 +51,7 @@ export default function MessagesPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this message?")) return;
     try {
-      await api.deleteInquiry(id);
+      await api.deleteInquiry(id.toString()); // ✅ FIX
       setMessages((prev) => prev.filter((m) => m.id !== id));
       if (selectedMessage?.id === id) setSelectedMessage(null);
     } catch (error) {
@@ -68,7 +68,9 @@ export default function MessagesPage() {
           <h1 className="text-2xl font-bold">Messages</h1>
           <p className="text-muted-foreground">
             {unreadCount > 0
-              ? `You have ${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`
+              ? `You have ${unreadCount} unread message${
+                  unreadCount > 1 ? "s" : ""
+                }`
               : "All messages read"}
           </p>
         </div>
@@ -96,7 +98,11 @@ export default function MessagesPage() {
                   >
                     <div className="flex items-start gap-3">
                       <div
-                        className={`mt-1 ${message.status === "unread" ? "text-primary" : "text-muted-foreground"}`}
+                        className={`mt-1 ${
+                          message.status === "unread"
+                            ? "text-primary"
+                            : "text-muted-foreground"
+                        }`}
                       >
                         {message.status === "unread" ? (
                           <Mail className="h-4 w-4" />
@@ -107,7 +113,11 @@ export default function MessagesPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <p
-                            className={`font-medium truncate ${message.status === "unread" ? "" : "text-muted-foreground"}`}
+                            className={`font-medium truncate ${
+                              message.status === "unread"
+                                ? ""
+                                : "text-muted-foreground"
+                            }`}
                           >
                             {message.name}
                           </p>
